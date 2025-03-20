@@ -2,12 +2,6 @@
 import pygame
 import math
 
-# IMPORT CUSTOM SCRIPTS
-
-import assets
-import GameLib
-import player
-
 
 pygame.init()
 # DEFINE GLOBAL VARIABLES
@@ -30,32 +24,48 @@ RENDER_LAYERS = {
     "MainOutline" : pygame.surface.Surface(SCREEN_SIZE),
     "Main" : pygame.surface.Surface(SCREEN_SIZE),
     "Particles" : pygame.surface.Surface(SCREEN_SIZE),
-    "Light" : pygame.surface.Surface(SCREEN_SIZE)
+    "Light" : pygame.surface.Surface(SCREEN_SIZE),
+    "Debug" : pygame.surface.Surface(SCREEN_SIZE)
 }
 
-# INIT OBJECTS
+# IMPORT CUSTOM SCRIPTS
 
-MAIN_CAMERA = GameLib.Camera()
-Player = player.player()
-
-# DEFINE CLASSES
-
-# DEFINE FUNCTIONS
-
-def update_():
-    pass
-
-def render_():
-    window.fill(BG_COLOR)
-    pygame.display.set_caption(WINDOW_CAPTION)
-    for object in RENDERABLE_OBJECTS:
-        object.render_(MAIN_CAMERA.position)
+import assets
+import GameLib
+import player
 
 # MAKE WINDOW
 
 window = pygame.display.set_mode((SCREEN_SIZE.x,SCREEN_SIZE.y-64),pygame.RESIZABLE)
 pygame.display.flip()
 running = True
+
+# INIT OBJECTS
+
+MAIN_CAMERA = GameLib.Camera()
+Player = player.player(RENDER_LAYERS["Player"])
+Player.worldPosition = pygame.Vector2(500,500)
+
+RENDERABLE_OBJECTS.append(Player)
+
+# DEFINE CLASSES
+
+# DEFINE FUNCTIONS
+
+def update_():
+    Player.update()
+
+def render_():
+    window.fill(BG_COLOR)
+    pygame.display.set_caption(WINDOW_CAPTION)
+    for layer in RENDER_LAYERS.values():
+        window.blit(layer,pygame.Vector2(0,0))
+    for object in RENDERABLE_OBJECTS:
+        object.render_(MAIN_CAMERA.position)
+
+def drawGizmos():
+    pygame.draw.circle(RENDER_LAYERS["Debug"],pygame.color.Color(255,255,255),pygame.mouse.get_pos(),5)
+
 render_()
 
 # INITIALIZE APP
@@ -66,7 +76,6 @@ while running:
     # PER FRAME EVENTS
 
     update_()
-    render_()
 
     # KEYBINDS & SHIT
     for event in pygame.event.get():
@@ -76,5 +85,5 @@ while running:
             running = False
             break
             
-    
+    render_()
     pygame.display.flip()

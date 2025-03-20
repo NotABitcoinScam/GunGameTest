@@ -2,6 +2,7 @@ import pygame
 import math
 
 import assets
+import GameLib
 
 pygame.init()
 
@@ -14,13 +15,14 @@ class player:
         self.movingAngle = 0
         self.renderedLayer = renderedLayer
         self.sprite = assets.grabTestPlayer()
+        self.sprite = GameLib.scaleSurfaceBy(self.sprite,5)
         
 
         self.stats = {
             'Speed' : 5
         }
     
-    def onEventCall(self, event):
+    def onPygameEventCall(self, event):
 
         pass
 
@@ -55,5 +57,9 @@ class player:
 
     def render_(self,camPos):
 
-        self.renderedLayer.blit()
+        self.renderedLayer.blit(self.sprite, (self.worldPosition - camPos) - GameLib.getCenterOffset(self.sprite))
+
+    def update(self):
+
+        self.updateMovement()
         

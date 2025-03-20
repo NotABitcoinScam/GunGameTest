@@ -28,6 +28,8 @@ RENDER_LAYERS = {
     "Debug" : pygame.surface.Surface(SCREEN_SIZE)
 }
 
+MainSurf = pygame.surface.Surface(SCREEN_SIZE)
+
 # IMPORT CUSTOM SCRIPTS
 
 import assets
@@ -43,7 +45,7 @@ running = True
 # INIT OBJECTS
 
 MAIN_CAMERA = GameLib.Camera()
-Player = player.player(RENDER_LAYERS["Player"])
+Player = player.player(MainSurf)
 Player.worldPosition = pygame.Vector2(500,500)
 
 RENDERABLE_OBJECTS.append(Player)
@@ -56,21 +58,29 @@ def update_():
     Player.update()
 
 def render_():
+
+    drawGizmos()
+
     window.fill(BG_COLOR)
     pygame.display.set_caption(WINDOW_CAPTION)
-    for layer in RENDER_LAYERS.values():
-        window.blit(layer,pygame.Vector2(0,0))
+    '''for key in RENDER_LAYERS.keys():
+        window.blit(RENDER_LAYERS[key],pygame.Vector2(0,0))'''
     for object in RENDERABLE_OBJECTS:
         object.render_(MAIN_CAMERA.position)
+    window.blit(MainSurf,pygame.Vector2(0,0))
 
 def drawGizmos():
-    pygame.draw.circle(RENDER_LAYERS["Debug"],pygame.color.Color(255,255,255),pygame.mouse.get_pos(),5)
+    pygame.draw.circle(MainSurf,pygame.color.Color(255,255,255),pygame.mouse.get_pos(),5)
+
+    pygame.draw.line(MainSurf,pygame.color.Color(0,0,255),Player.worldPosition - MAIN_CAMERA.position, (Player.worldPosition - MAIN_CAMERA.position) + pygame.Vector2(math.cos(Player.movingAngle) * 50, math.sin(Player.movingAngle) * 50))
 
 render_()
 
 # INITIALIZE APP
 
 # MAINLOOP
+
+clock = pygame.time.Clock()
 
 while running:
     # PER FRAME EVENTS
@@ -87,3 +97,10 @@ while running:
             
     render_()
     pygame.display.flip()
+
+    MainSurf.fill(pygame.color.Color(0,0,0))
+
+    #for key in RENDER_LAYERS.keys():
+        #RENDER_LAYERS[key].fill(pygame.color.Color(0,0,0,0))
+
+    clock.tick(60)

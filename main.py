@@ -1,6 +1,7 @@
 # IMPORT LIBRARIES
 import pygame
 import math
+import sys
 
 
 pygame.init()
@@ -50,6 +51,16 @@ Player.worldPosition = pygame.Vector2(500,500)
 
 RENDERABLE_OBJECTS.append(Player)
 
+# DEBUG CRAP
+
+
+
+testgunasset = assets.grabTestGun()
+testgunasset = GameLib.scaleSurfaceBy(testgunasset,5)
+testgunwithoutline = GameLib.createOutline(testgunasset,5,pygame.color.Color(255,255,255))
+
+
+
 # DEFINE CLASSES
 
 # DEFINE FUNCTIONS
@@ -70,6 +81,10 @@ def render_():
     window.blit(MainSurf,pygame.Vector2(0,0))
 
 def drawGizmos():
+
+    MainSurf.blit(testgunasset,pygame.Vector2(500,500))
+    MainSurf.blit(testgunwithoutline,pygame.Vector2(600,500))
+
     pygame.draw.circle(MainSurf,pygame.color.Color(255,255,255),pygame.mouse.get_pos(),5)
 
     pygame.draw.line(MainSurf,pygame.color.Color(0,0,255),Player.worldPosition - MAIN_CAMERA.position, (Player.worldPosition - MAIN_CAMERA.position) + pygame.Vector2(math.cos(Player.movingAngle) * 50, math.sin(Player.movingAngle) * 50))
@@ -93,12 +108,13 @@ while running:
         if event.type == pygame.QUIT:
 
             running = False
+            sys.exit()
             break
             
     render_()
     pygame.display.flip()
 
-    MainSurf.fill(pygame.color.Color(0,0,0))
+    MainSurf.fill(BG_COLOR)
 
     #for key in RENDER_LAYERS.keys():
         #RENDER_LAYERS[key].fill(pygame.color.Color(0,0,0,0))

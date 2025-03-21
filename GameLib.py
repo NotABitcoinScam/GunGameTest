@@ -17,26 +17,7 @@ class Camera():
             downKeys = pygame.key.get_pressed()
 
             # SET A MOVEMENT ANGLE FOR CALCULATING WHERE TO GO
-            if downKeys[pygame.K_LEFT]:
-                self.movingAngle = -90
-            if downKeys[pygame.K_RIGHT]:
-                self.movingAngle = 90
-            if downKeys[pygame.K_UP]:
-                self.movingAngle = 0
-                if downKeys[pygame.K_LEFT]:
-                    self.movingAngle = -45
-                if downKeys[pygame.K_RIGHT]:
-                    self.movingAngle = 45
-                if downKeys[pygame.K_LEFT] and downKeys[pygame.K_RIGHT]:
-                    self.movingAngle = 0
-            if downKeys[pygame.K_DOWN]:
-                self.movingAngle = 180
-                if downKeys[pygame.K_LEFT]:
-                    self.movingAngle = -135
-                if downKeys[pygame.K_RIGHT]:
-                    self.movingAngle = 135
-                if downKeys[pygame.K_LEFT] and downKeys[pygame.K_RIGHT]:
-                    self.movingAngle = 180
+            
     def update(self):
         
         self.updateKeydowns()
@@ -49,3 +30,21 @@ def scaleSurfaceBy(surface = pygame.surface.Surface, scale = float):
 def getCenterOffset(surface = pygame.surface.Surface):
 
     return pygame.Vector2(surface.get_width()/2, surface.get_height()/2)
+
+def createOutline(inputSurface = pygame.surface.Surface, pixelSize = int, color = pygame.color.Color):
+
+    dimensions = pygame.Vector2(inputSurface.get_width(),inputSurface.get_height())
+
+    newsurface = pygame.surface.Surface(dimensions + pygame.Vector2(2*pixelSize,2*pixelSize))
+
+    maskSurface = pygame.mask.from_surface(inputSurface)
+    maskSurface = maskSurface.to_surface(inputSurface,setcolor=color)
+
+    newsurface.blit(maskSurface,pygame.Vector2(0,0))
+    newsurface.blit(maskSurface,pygame.Vector2(pixelSize*2,0))
+    newsurface.blit(maskSurface,pygame.Vector2(0,pixelSize*2))
+    newsurface.blit(maskSurface,pygame.Vector2(pixelSize*2,pixelSize*2))
+
+    newsurface.blit(inputSurface,pygame.Vector2(pixelSize,pixelSize))
+
+    return newsurface

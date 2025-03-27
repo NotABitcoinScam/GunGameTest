@@ -33,12 +33,13 @@ def getCenterOffset(surface = pygame.surface.Surface):
 
 def createOutline(inputSurface = pygame.surface.Surface, pixelSize = int, color = pygame.color.Color):
 
-    dimensions = pygame.Vector2(inputSurface.get_width(),inputSurface.get_height())
+    maskSurface = pygame.mask.from_surface(inputSurface)
+
+    dimensions = pygame.Vector2(maskSurface.get_rect().x,maskSurface.get_rect().y)
 
     newsurface = pygame.surface.Surface(dimensions + pygame.Vector2(2*pixelSize,2*pixelSize))
 
-    maskSurface = pygame.mask.from_surface(inputSurface)
-    maskSurface = maskSurface.to_surface(inputSurface,setcolor=color)
+    maskSurface = maskSurface.to_surface(newsurface,setcolor=color)
 
     newsurface.blit(maskSurface,pygame.Vector2(0,0))
     newsurface.blit(maskSurface,pygame.Vector2(pixelSize*2,0))

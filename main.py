@@ -66,7 +66,7 @@ testgunwithoutline = GameLib.createOutline(testgunasset,5,pygame.color.Color(255
 # DEFINE FUNCTIONS
 
 def update_():
-    Player.update()
+    Player.update() 
 
 def render_():
 
@@ -110,6 +110,8 @@ while running:
             running = False
             sys.exit()
             break
+
+    WINDOW_CAPTION = 'Window - FPS: ' + str(round(clock.get_fps(),2))
             
     render_()
     pygame.display.flip()

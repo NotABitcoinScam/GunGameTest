@@ -73,10 +73,10 @@ def render_():
 
     drawGizmos()
 
-    smoothing = 30
-    
-    difference = (Player.worldPosition - MAIN_CAMERA.position)/smoothing
 
+    # CAMERA SMOOTH =D
+    smoothing = 30
+    difference = (Player.worldPosition - MAIN_CAMERA.position)/smoothing
     MAIN_CAMERA.position += pygame.Vector2(difference)
 
 

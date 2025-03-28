@@ -9,9 +9,6 @@ class Camera():
 
         self.position = position
         self.moveWithArrows = False
-        self.pastPositions = []
-        for i in range(60):
-            self.pastPositions.append(position)
     
     def updateKeydowns(self):
 
@@ -44,8 +41,7 @@ class Camera():
     def update(self):
         
         self.updateKeydowns()
-        self.pastPositions.insert(0,self.position)
-        self.pastPositions.pop(len(self.pastPositions)-1)
+        
 
 
 def scaleSurfaceBy(surface = pygame.surface.Surface, scale = float):

@@ -9,18 +9,43 @@ class Camera():
 
         self.position = position
         self.moveWithArrows = False
+        self.pastPositions = []
+        for i in range(60):
+            self.pastPositions.append(position)
     
     def updateKeydowns(self):
 
         if self.moveWithArrows:
+            
+            camspeed = 5
 
             downKeys = pygame.key.get_pressed()
 
             # SET A MOVEMENT ANGLE FOR CALCULATING WHERE TO GO
+
+            if downKeys[pygame.K_UP] == True or downKeys[pygame.K_DOWN] == True or downKeys[pygame.K_LEFT] == True or downKeys[pygame.K_RIGHT] == True:
+                self.currentSpeed = camspeed
+            else:
+                self.currentSpeed = 0
+            
+            self.moveVector = pygame.Vector2(0,0)
+
+            if downKeys[pygame.K_UP]:
+                self.moveVector += pygame.Vector2(0,-self.currentSpeed)
+            if downKeys[pygame.K_DOWN]:
+                self.moveVector += pygame.Vector2(0,self.currentSpeed)
+            if downKeys[pygame.K_LEFT]:
+                self.moveVector += pygame.Vector2(-self.currentSpeed, 0)
+            if downKeys[pygame.K_RIGHT]:
+                self.moveVector += pygame.Vector2(self.currentSpeed, 0)
+
+            self.position += self.moveVector
             
     def update(self):
         
         self.updateKeydowns()
+        self.pastPositions.insert(0,self.position)
+        self.pastPositions.pop(len(self.pastPositions)-1)
 
 
 def scaleSurfaceBy(surface = pygame.surface.Surface, scale = float):
@@ -49,3 +74,20 @@ def createOutline(inputSurface = pygame.surface.Surface, pixelSize = int, color 
     newsurface.blit(inputSurface,pygame.Vector2(pixelSize,pixelSize))
 
     return newsurface
+
+def stripFromSheet(sheet, start, size, columns, rows=1):
+    """
+    Strips individual frames from a sprite sheet given a start location,
+    sprite size, and number of columns and rows.
+    """
+    frames = []
+    for j in range(rows):
+        for i in range(columns):
+            location = (start[0]+size[0]*i, start[1]+size[1]*j)
+            frames.append(sheet.subsurface(pygame.Rect(location, size)))
+    return frames
+
+def getMouseVector2():
+
+    return pygame.Vector2(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
+

@@ -16,8 +16,17 @@ class player:
         self.movingAngle = 0
         self.moveVector = pygame.Vector2(0,0)
         self.renderedLayer = renderedLayer
-        self.sprite = assets.grabTestPlayer()
-        self.sprite = GameLib.scaleSurfaceBy(self.sprite,5)
+        self.headSheet = pygame.image.load("Assets/Characters/TestCharacter2/TestCharacter2Head-Sheet.png").convert_alpha()
+        self.slicedHeadSheet = GameLib.stripFromSheet(self.headSheet,[0,0],[16,16],1,4)
+        self.headSprites = {
+            "Up" : GameLib.scaleSurfaceBy(self.slicedHeadSheet[1],5),
+            "Down" : GameLib.scaleSurfaceBy(self.slicedHeadSheet[3],5),
+            "Left" : GameLib.scaleSurfaceBy(self.slicedHeadSheet[0],5),
+            "Right" : GameLib.scaleSurfaceBy(self.slicedHeadSheet[2],5)
+        }
+        self.currentHeadSprite = self.headSprites["Down"]
+        self.halfSpriteSize = pygame.Vector2(128,128)
+        self.sprite = pygame.surface.Surface((self.halfSpriteSize.x*2,self.halfSpriteSize.y*2)).convert_alpha()
         
 
         self.stats = {
@@ -49,18 +58,43 @@ class player:
             self.moveVector += pygame.Vector2(-self.stats['Speed'], 0)
         if downKeys[pygame.K_d]:
             self.moveVector += pygame.Vector2(self.stats['Speed'], 0)
-        
-        
 
     def updateMovement(self):
         self.worldPosition += self.moveVector
 
     def render_(self,camPos):
 
+
+
+        world_to_cam = self.worldPosition - camPos
+        mousePosOffset = GameLib.getMouseVector2() - world_to_cam
+
+        angle = math.atan2(mousePosOffset[1], mousePosOffset[0])
+        
+        if -math.pi/4 <= angle <= math.pi/4:
+            self.currentHeadSprite = self.headSprites['Right']
+        elif math.pi/4 < angle <= 3*math.pi/4:
+            self.currentHeadSprite = self.headSprites['Down']
+        elif 3*math.pi/4 < angle or angle <= -3*math.pi/4:
+            self.currentHeadSprite = self.headSprites['Left']
+        else: # -3*math.pi/4 < angle < -math.pi/4
+            self.currentHeadSprite = self.headSprites['Up']
+        angle = -self.moveVector.x
+
+
+
+        
+        self.sprite.fill(pygame.color.Color(0,0,0,0))
+
+        self.sprite.blit(pygame.transform.rotate(self.currentHeadSprite,angle),self.halfSpriteSize - GameLib.getCenterOffset(self.currentHeadSprite))
+        
         self.renderedLayer.blit(self.sprite, (self.worldPosition - camPos) - GameLib.getCenterOffset(self.sprite))
 
     def update(self):
         
         self.updateKeydowns()
         self.updateMovement()
+
+if __name__ == '__main__':
+    import main
         

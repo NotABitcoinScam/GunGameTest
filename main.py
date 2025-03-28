@@ -46,6 +46,7 @@ running = True
 # INIT OBJECTS
 
 MAIN_CAMERA = GameLib.Camera()
+#MAIN_CAMERA.moveWithArrows = True
 Player = player.player(MainSurf)
 Player.worldPosition = pygame.Vector2(500,500)
 
@@ -72,18 +73,30 @@ def render_():
 
     drawGizmos()
 
+    smoothing = 30
+    
+    difference = (Player.worldPosition - MAIN_CAMERA.position)/smoothing
+
+    MAIN_CAMERA.position += pygame.Vector2(difference)
+
+
+    
+
     window.fill(BG_COLOR)
     pygame.display.set_caption(WINDOW_CAPTION)
     '''for key in RENDER_LAYERS.keys():
         window.blit(RENDER_LAYERS[key],pygame.Vector2(0,0))'''
+    MAIN_CAMERA.update()
     for object in RENDERABLE_OBJECTS:
-        object.render_(MAIN_CAMERA.position)
+        object.render_(MAIN_CAMERA.position - SCREEN_SIZE/2)
     window.blit(MainSurf,pygame.Vector2(0,0))
 
 def drawGizmos():
 
     MainSurf.blit(testgunasset,pygame.Vector2(500,500))
     MainSurf.blit(testgunwithoutline,pygame.Vector2(600,500))
+
+    pygame.draw.circle(MainSurf,pygame.color.Color(0,0,255),pygame.Vector2(0,0) - MAIN_CAMERA.position,15)
 
     pygame.draw.circle(MainSurf,pygame.color.Color(255,255,255),pygame.mouse.get_pos(),5)
 

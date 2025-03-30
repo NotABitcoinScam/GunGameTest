@@ -11,9 +11,10 @@ class limb:
 
     def __init__(self, player, renderSurf = pygame.surface.Surface, sprite = pygame.surface.Surface, targetPos = pygame.Vector2):
         
+        self.DEBUG = False
         self.player = player
         self.renderSurf = renderSurf
-        self.smoothing = 10
+        self.smoothing = 3
         self.targetPos = targetPos
         self.ogPos = targetPos
         self.position = targetPos
@@ -23,34 +24,55 @@ class limb:
 
     #TODO Finish the stepping
 
+    def step(self, idealTarget):
+        self.isStepping = True
+        self.targetPos = idealTarget
+
     def update(self, idealTarget):
+
+        difference = (self.targetPos - self.position)/self.smoothing
+        self.position += pygame.Vector2(difference)
  
-        if ((self.targetPos.x - idealTarget.x)**2 + (self.targetPos.y - idealTarget.y)**2) <= 10:
+        '''if math.sqrt((self.targetPos.x - idealTarget.x)**2 + (self.targetPos.y - idealTarget.y)**2) <= 5 and self.isStepping == True:
             self.isStepping = False
         
-        if ((self.targetPos.x - idealTarget.x)**2 + (self.targetPos.y - idealTarget.y)**2) >= 10 and self.isAbleToStep:
+        if math.sqrt((self.targetPos.x - idealTarget.x)**2 + (self.targetPos.y - idealTarget.y)**2) >= 25 and self.isAbleToStep and self.isStepping == False:
             self.isStepping = True
+            self.targetPos = idealTarget
+
+        if math.sqrt((self.targetPos.x - idealTarget.x)**2 + (self.targetPos.y - idealTarget.y)**2) >= 50:
+            self.isStepping = True
+            self.targetPos = idealTarget
+
+        difference = (self.targetPos - self.position)/self.smoothing
+        self.position += pygame.Vector2(difference)
 
         if self.isStepping:
-            difference = (self.targetPos - self.position)/self.smoothing
-            self.position += pygame.Vector2(difference)
+            pass'''
 
     def render_(self, idealTarget):
 
         self.renderSurf.blit(self.sprite, self.position - GameLib.getCenterOffset(self.sprite))
-        if self.isStepping:
-            pygame.draw.circle(self.renderSurf,pygame.color.Color(255,0,0),self.targetPos,5)
-        else:
-            pygame.draw.circle(self.renderSurf,pygame.color.Color(0,255,0),self.targetPos,5)
-        pygame.draw.circle(self.renderSurf, pygame.color.Color(0,0,255), idealTarget,2.5)
+        if self.DEBUG:
+            if self.isStepping:
+                pygame.draw.circle(self.renderSurf,pygame.color.Color(255,0,0),self.targetPos,5)
+                pygame.draw.line(self.renderSurf,pygame.color.Color(255,0,0),self.targetPos,idealTarget)
+            else:
+                pygame.draw.circle(self.renderSurf,pygame.color.Color(0,255,0),self.targetPos,5)
+                pygame.draw.line(self.renderSurf,pygame.color.Color(0,255,0),self.targetPos,idealTarget)
+            pygame.draw.circle(self.renderSurf, pygame.color.Color(0,0,255), idealTarget,2.5)
+
 
 
 class player:
 
     def __init__(self, renderedLayer = pygame.surface.Surface):
 
+        self.currentFoot = 'Right'
         self.internalAnimTimer = 0
         self.bodyHeadSeperation = 40
+        self.footMult = 1.35
+        self.stepDistanceMult = 10
         self.worldPosition = pygame.Vector2(0,0)
         self.currentSpeed = 0
         self.facingAngle = 0
@@ -84,8 +106,8 @@ class player:
         
         self.limbSprite = pygame.image.load('Assets/Characters/TestCharacter2/TestCharacter2Limb.png').convert_alpha()
         self.limbSprite = GameLib.scaleSurfaceBy(self.limbSprite,5)
-        self.leftFoot = limb(self,self.sprite,self.limbSprite,pygame.Vector2(-10,self.bodyHeadSeperation * 1.5) + self.halfSpriteSize)
-        self.rightFoot = limb(self,self.sprite,self.limbSprite,pygame.Vector2(10,self.bodyHeadSeperation * 1.5) + self.halfSpriteSize)
+        self.leftFoot = limb(self,self.sprite,self.limbSprite,pygame.Vector2(-10,self.bodyHeadSeperation * self.footMult) + self.halfSpriteSize)
+        self.rightFoot = limb(self,self.sprite,self.limbSprite,pygame.Vector2(10,self.bodyHeadSeperation * self.footMult) + self.halfSpriteSize)
         
 
         self.stats = {
@@ -97,7 +119,7 @@ class player:
         pass
 
     def updateKeydowns(self):
-
+        
         downKeys = pygame.key.get_pressed()
 
         # SET A MOVEMENT ANGLE FOR CALCULATING WHERE TO GO
@@ -125,8 +147,16 @@ class player:
         self.rightFoot.targetPos -= self.moveVector
         #self.leftFoot.ogPos += self.moveVector
         #self.rightFoot.ogPos += self.moveVector
-        self.leftFoot.update(pygame.Vector2(-10,self.bodyHeadSeperation * 1.5) + self.halfSpriteSize)
-        self.rightFoot.update(pygame.Vector2(10,self.bodyHeadSeperation * 1.5) + self.halfSpriteSize)
+        self.leftFoot.update(pygame.Vector2(-10,self.bodyHeadSeperation * self.footMult) + self.halfSpriteSize + self.moveVector * self.stepDistanceMult)
+        self.rightFoot.update(pygame.Vector2(10,self.bodyHeadSeperation * self.footMult) + self.halfSpriteSize + self.moveVector * self.stepDistanceMult)
+        
+        if self.internalAnimTimer % 10 == 0:
+            if self.currentFoot == 'Left':
+                self.currentFoot = 'Right'
+                self.leftFoot.step(pygame.Vector2(-10,self.bodyHeadSeperation * self.footMult) + self.halfSpriteSize + self.moveVector * self.stepDistanceMult)
+            else:
+                self.currentFoot = 'Left'
+                self.rightFoot.step(pygame.Vector2(10,self.bodyHeadSeperation * self.footMult) + self.halfSpriteSize + self.moveVector * self.stepDistanceMult)
 
     def render_(self,camPos):
 
@@ -160,14 +190,15 @@ class player:
         
         self.sprite.fill(pygame.color.Color(0,0,0,0))
 
+        self.leftFoot.render_(pygame.Vector2(-10,self.bodyHeadSeperation * self.footMult) + self.halfSpriteSize + self.moveVector * self.stepDistanceMult)
+        self.rightFoot.render_(pygame.Vector2(10,self.bodyHeadSeperation * self.footMult) + self.halfSpriteSize + self.moveVector * self.stepDistanceMult)
+
         rotateAdjustedBodySprite = GameLib.rotateAtCenter(self.currentBodySprite, self.bodySpriteAngle)
         self.sprite.blit(rotateAdjustedBodySprite[0],self.halfSpriteSize - rotateAdjustedBodySprite[1] + pygame.Vector2(0,self.bodyHeadSeperation/2))
 
         rotateAdjustedHeadSprite = GameLib.rotateAtCenter(self.currentHeadSprite,self.headSpriteAngle)
         self.sprite.blit(rotateAdjustedHeadSprite[0],self.halfSpriteSize - rotateAdjustedHeadSprite[1] + pygame.Vector2(self.moveVector.x,headBobHeight) + pygame.Vector2(0,-self.bodyHeadSeperation/2))
     
-        self.leftFoot.render_(pygame.Vector2(-10,self.bodyHeadSeperation * 1.5) + self.halfSpriteSize)
-        self.rightFoot.render_(pygame.Vector2(10,self.bodyHeadSeperation * 1.5) + self.halfSpriteSize)
 
         self.renderedLayer.blit(self.sprite, (self.worldPosition - camPos) - GameLib.getCenterOffset(self.sprite))
 

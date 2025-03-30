@@ -87,3 +87,14 @@ def getMouseVector2():
 
     return pygame.Vector2(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
 
+def rotateAtCenter(surface, angle):
+         rotated_image = pygame.transform.rotate(surface, angle)
+         new_rect = getCenterOffset(rotated_image)
+         return rotated_image, new_rect
+
+
+if __name__ == '__main__':
+    try:
+        import main
+    except ModuleNotFoundError:
+        raise Exception("No associated main.py file found")

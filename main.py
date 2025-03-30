@@ -12,6 +12,7 @@ WINDOW_CAPTION = "Window"
 PYGAME_INFO = pygame.display.Info()
 SCREEN_SIZE = pygame.Vector2(PYGAME_INFO.current_w,PYGAME_INFO.current_h)
 RENDERABLE_OBJECTS = []
+PIXEL_SIZE = 5
 RENDER_LAYERS = {
     "Floor" : pygame.surface.Surface(SCREEN_SIZE),
     "Blood" : pygame.surface.Surface(SCREEN_SIZE),
@@ -29,7 +30,7 @@ RENDER_LAYERS = {
     "Debug" : pygame.surface.Surface(SCREEN_SIZE)
 }
 
-MainSurf = pygame.surface.Surface(SCREEN_SIZE)
+
 
 # IMPORT CUSTOM SCRIPTS
 
@@ -45,6 +46,7 @@ running = True
 
 # INIT OBJECTS
 
+MainSurf = pygame.surface.Surface(SCREEN_SIZE)
 MAIN_CAMERA = GameLib.Camera()
 #MAIN_CAMERA.moveWithArrows = True
 Player = player.player(MainSurf)
@@ -57,8 +59,8 @@ RENDERABLE_OBJECTS.append(Player)
 
 
 testgunasset = assets.grabTestGun()
-testgunasset = GameLib.scaleSurfaceBy(testgunasset,5)
-testgunwithoutline = GameLib.createOutline(testgunasset,5,pygame.color.Color(255,255,255))
+testgunasset = GameLib.scaleSurfaceBy(testgunasset,PIXEL_SIZE)
+testgunwithoutline = GameLib.createOutline(testgunasset,PIXEL_SIZE,pygame.color.Color(255,255,255))
 
 
 
@@ -66,16 +68,17 @@ testgunwithoutline = GameLib.createOutline(testgunasset,5,pygame.color.Color(255
 
 # DEFINE FUNCTIONS
 
-def update_():
+def update_(): 
     Player.update() 
 
 def render_():
+    global MainSurf
 
     drawGizmos()
 
 
     # CAMERA SMOOTH =D
-    smoothing = 30
+    smoothing = 20
     difference = (Player.worldPosition - MAIN_CAMERA.position)/smoothing
     MAIN_CAMERA.position += pygame.Vector2(difference)
 
@@ -89,12 +92,17 @@ def render_():
     MAIN_CAMERA.update()
     for object in RENDERABLE_OBJECTS:
         object.render_(MAIN_CAMERA.position - SCREEN_SIZE/2)
+
+    '''tempsurf = MainSurf
+    tempsurf = GameLib.scaleSurfaceBy(MainSurf,1/PIXEL_SIZE)
+    MainSurf = GameLib.scaleSurfaceBy(tempsurf,PIXEL_SIZE)'''
+    
     window.blit(MainSurf,pygame.Vector2(0,0))
 
 def drawGizmos():
 
-    MainSurf.blit(testgunasset,pygame.Vector2(500,500))
-    MainSurf.blit(testgunwithoutline,pygame.Vector2(600,500))
+    #MainSurf.blit(testgunasset,pygame.Vector2(500,500))
+    #MainSurf.blit(testgunwithoutline,pygame.Vector2(600,500))
 
     pygame.draw.circle(MainSurf,pygame.color.Color(0,0,255),pygame.Vector2(0,0) - MAIN_CAMERA.position,15)
 

@@ -32,23 +32,6 @@ class limb:
 
         difference = (self.targetPos - self.position)/self.smoothing
         self.position += pygame.Vector2(difference)
- 
-        '''if math.sqrt((self.targetPos.x - idealTarget.x)**2 + (self.targetPos.y - idealTarget.y)**2) <= 5 and self.isStepping == True:
-            self.isStepping = False
-        
-        if math.sqrt((self.targetPos.x - idealTarget.x)**2 + (self.targetPos.y - idealTarget.y)**2) >= 25 and self.isAbleToStep and self.isStepping == False:
-            self.isStepping = True
-            self.targetPos = idealTarget
-
-        if math.sqrt((self.targetPos.x - idealTarget.x)**2 + (self.targetPos.y - idealTarget.y)**2) >= 50:
-            self.isStepping = True
-            self.targetPos = idealTarget
-
-        difference = (self.targetPos - self.position)/self.smoothing
-        self.position += pygame.Vector2(difference)
-
-        if self.isStepping:
-            pass'''
 
     def render_(self, idealTarget):
 
@@ -122,8 +105,6 @@ class player:
         
         downKeys = pygame.key.get_pressed()
 
-        # SET A MOVEMENT ANGLE FOR CALCULATING WHERE TO GO
-
         if downKeys[pygame.K_w] == True or downKeys[pygame.K_s] == True or downKeys[pygame.K_a] == True or downKeys[pygame.K_d] == True:
             self.currentSpeed = self.stats['Speed']
         else:
@@ -145,8 +126,6 @@ class player:
         self.worldPosition += self.moveVector
         self.leftFoot.targetPos -= self.moveVector
         self.rightFoot.targetPos -= self.moveVector
-        #self.leftFoot.ogPos += self.moveVector
-        #self.rightFoot.ogPos += self.moveVector
         self.leftFoot.update(pygame.Vector2(-10,self.bodyHeadSeperation * self.footMult) + self.halfSpriteSize + self.moveVector * self.stepDistanceMult)
         self.rightFoot.update(pygame.Vector2(10,self.bodyHeadSeperation * self.footMult) + self.halfSpriteSize + self.moveVector * self.stepDistanceMult)
         

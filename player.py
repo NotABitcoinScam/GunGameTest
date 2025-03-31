@@ -1,8 +1,11 @@
 import pygame
 import math
 
+import Guns.TestGun
+import Guns.TestGun.TestGun
 import assets
 import GameLib
+import Guns
 
 pygame.init()
 
@@ -92,6 +95,9 @@ class player:
         self.leftFoot = limb(self,self.sprite,self.limbSprite,pygame.Vector2(-10,self.bodyHeadSeperation * self.footMult) + self.halfSpriteSize)
         self.rightFoot = limb(self,self.sprite,self.limbSprite,pygame.Vector2(10,self.bodyHeadSeperation * self.footMult) + self.halfSpriteSize)
         
+
+        self.currentGun = None
+
 
         self.stats = {
             'Speed' : 5

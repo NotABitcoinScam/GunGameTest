@@ -1,7 +1,7 @@
 import pygame
 pygame.init()
 
-
+pygame.font.init()
 
 class Camera():
     
@@ -91,6 +91,12 @@ def rotateAtCenter(surface, angle):
          rotated_image = pygame.transform.rotate(surface, angle)
          new_rect = getCenterOffset(rotated_image)
          return rotated_image, new_rect
+
+def drawLabelBox(surface = pygame.surface.Surface, color = pygame.color.Color, text = str, size = int):
+    pygame.draw.rect(surface,color,surface.get_rect(),2)
+    font = pygame.font.SysFont(pygame.font.get_default_font(),size)
+    textSurface = font.render(text,False,color)
+    surface.blit(textSurface,pygame.Vector2(2,2))
 
 
 if __name__ == '__main__':

@@ -1,6 +1,8 @@
 import pygame
 import math
 
+import Guns.AK_47
+import Guns.AK_47.AK_47
 import Guns.TestGun
 import Guns.TestGun.TestGun
 import assets
@@ -8,6 +10,8 @@ import GameLib
 import Guns
 
 pygame.init()
+
+INFO = pygame.display.Info()
 
 
 class limb:
@@ -96,7 +100,7 @@ class player:
         self.rightFoot = limb(self,self.sprite,self.limbSprite,pygame.Vector2(10,self.bodyHeadSeperation * self.footMult) + self.halfSpriteSize)
         
 
-        self.currentGun = None
+        self.currentGun = Guns.AK_47.AK_47.AK_47(self.sprite,self,self.halfSpriteSize)
 
 
         self.stats = {
@@ -175,6 +179,9 @@ class player:
         
         self.sprite.fill(pygame.color.Color(0,0,0,0))
 
+        if -3*math.pi/4 < angle < -math.pi/4:
+            self.currentGun.render_(camPos)
+
         self.leftFoot.render_(pygame.Vector2(-10,self.bodyHeadSeperation * self.footMult) + self.halfSpriteSize + self.moveVector * self.stepDistanceMult)
         self.rightFoot.render_(pygame.Vector2(10,self.bodyHeadSeperation * self.footMult) + self.halfSpriteSize + self.moveVector * self.stepDistanceMult)
 
@@ -184,6 +191,10 @@ class player:
         rotateAdjustedHeadSprite = GameLib.rotateAtCenter(self.currentHeadSprite,self.headSpriteAngle)
         self.sprite.blit(rotateAdjustedHeadSprite[0],self.halfSpriteSize - rotateAdjustedHeadSprite[1] + pygame.Vector2(self.moveVector.x,headBobHeight) + pygame.Vector2(0,-self.bodyHeadSeperation/2))
     
+        if not -3*math.pi/4 < angle < -math.pi/4:
+            self.currentGun.render_(camPos)
+        
+
 
         self.renderedLayer.blit(self.sprite, (self.worldPosition - camPos) - GameLib.getCenterOffset(self.sprite))
 

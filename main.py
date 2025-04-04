@@ -7,7 +7,7 @@ import sys
 pygame.init()
 # DEFINE GLOBAL VARIABLES
 
-BG_COLOR = (50,50,50)
+BG_COLOR = (100,100,100)
 WINDOW_CAPTION = "Window"
 PYGAME_INFO = pygame.display.Info()
 SCREEN_SIZE = pygame.Vector2(PYGAME_INFO.current_w,PYGAME_INFO.current_h)
@@ -34,6 +34,8 @@ RENDER_LAYERS = {
 
 # IMPORT CUSTOM SCRIPTS
 
+import Assets.WalkingTurret
+import WalkingTurret
 import assets
 import GameLib
 import player
@@ -53,6 +55,8 @@ Player = player.player(MainSurf)
 Player.worldPosition = pygame.Vector2(500,500)
 
 RENDERABLE_OBJECTS.append(Player)
+ENEMIES = []
+RENDERABLE_OBJECTS.append(WalkingTurret.WalkingTurret(MainSurf,Player,pygame.Vector2(500,500)))
 
 # DEBUG CRAP
 
@@ -69,7 +73,9 @@ testgunwithoutline = GameLib.createOutline(testgunasset,PIXEL_SIZE,pygame.color.
 # DEFINE FUNCTIONS
 
 def update_(): 
-    Player.update() 
+    for object in RENDERABLE_OBJECTS:
+        object.update()
+        
 
 def render_():
     global MainSurf

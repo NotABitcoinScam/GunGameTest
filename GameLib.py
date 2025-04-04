@@ -1,5 +1,8 @@
 import pygame
+import math
 pygame.init()
+
+INFO = pygame.display.Info()
 
 pygame.font.init()
 
@@ -98,6 +101,14 @@ def drawLabelBox(surface = pygame.surface.Surface, color = pygame.color.Color, t
     textSurface = font.render(text,False,color)
     surface.blit(textSurface,pygame.Vector2(2,2))
 
+#def vectorDistance(inp1,inp2):
+#    return pygame.Vector2(math.sqrt(inp1.x**2 - inp2.x**2),math.sqrt(inp1.y**2 - inp2.y**2))
+
+def getHalfScreenVector2():
+    return pygame.Vector2(INFO.current_w/2,INFO.current_h/2)
+
+def getScreenVector2():
+    return pygame.Vector2(INFO.current_w,INFO.current_h)
 
 if __name__ == '__main__':
     try:

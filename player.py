@@ -8,6 +8,7 @@ import Guns.TestGun.TestGun
 import assets
 import GameLib
 import Guns
+import ToasterPet
 
 pygame.init()
 
@@ -101,6 +102,7 @@ class player:
         
 
         self.currentGun = Guns.AK_47.AK_47.AK_47(self.sprite,self,self.halfSpriteSize)
+        self.currentPet = ToasterPet.ToasterPet(self.renderedLayer,self,self.worldPosition)
 
 
         self.stats = {
@@ -146,6 +148,7 @@ class player:
             else:
                 self.currentFoot = 'Left'
                 self.rightFoot.step(pygame.Vector2(10,self.bodyHeadSeperation * self.footMult) + self.halfSpriteSize + self.moveVector * self.stepDistanceMult)
+        self.currentPet.update()
 
     def render_(self,camPos):
 
@@ -180,7 +183,8 @@ class player:
         self.sprite.fill(pygame.color.Color(0,0,0,0))
 
         if -3*math.pi/4 < angle < -math.pi/4:
-            self.currentGun.render_(camPos)
+            pass
+            #self.currentGun.render_(camPos)
 
         self.leftFoot.render_(pygame.Vector2(-10,self.bodyHeadSeperation * self.footMult) + self.halfSpriteSize + self.moveVector * self.stepDistanceMult)
         self.rightFoot.render_(pygame.Vector2(10,self.bodyHeadSeperation * self.footMult) + self.halfSpriteSize + self.moveVector * self.stepDistanceMult)
@@ -192,11 +196,18 @@ class player:
         self.sprite.blit(rotateAdjustedHeadSprite[0],self.halfSpriteSize - rotateAdjustedHeadSprite[1] + pygame.Vector2(self.moveVector.x,headBobHeight) + pygame.Vector2(0,-self.bodyHeadSeperation/2))
     
         if not -3*math.pi/4 < angle < -math.pi/4:
-            self.currentGun.render_(camPos)
+            pass
+            #self.currentGun.render_(camPos)
         
-
+        #pygame.Vector2(-10,self.bodyHeadSeperation * self.footMult) + self.halfSpriteSize + self.moveVector * self.stepDistanceMult
+        
+        if self.currentPet.position.y <= (self.worldPosition.y + (self.bodyHeadSeperation)):
+            self.currentPet.render(camPos)
 
         self.renderedLayer.blit(self.sprite, (self.worldPosition - camPos) - GameLib.getCenterOffset(self.sprite))
+
+        if self.currentPet.position.y > (self.worldPosition.y + (self.bodyHeadSeperation)):
+            self.currentPet.render(camPos)
 
     def update(self):
         

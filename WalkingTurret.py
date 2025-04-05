@@ -155,8 +155,13 @@ class WalkingTurret():
 
         self.internalAnimTimer += 1
 
-        pygame.draw.circle(self.renderSurface, pygame.color.Color(255,0,0), self.position - self.campos, 5)
+        #pygame.draw.circle(self.renderSurface, pygame.color.Color(255,0,0), self.position - self.campos, 5)
         #self.legs['FrontRight'].step(GameLib.getHalfScreenVector2() - GameLib.getCenterOffset(self.displaySprite))
+
+        if self.internalAnimTimer % 60 in [0,1,2,3,4,5,6,7,8,9]:
+            self.currentHeadSprite = self.headSprites['Beep']
+        else:
+            self.currentHeadSprite = self.headSprites['Idle']
 
         if self.internalAnimTimer % self.animPeriod == 0:
 
@@ -199,7 +204,7 @@ class WalkingTurret():
 
         rotatedSprite = GameLib.rotateAtCenter(preRotatedSprite, -angle)
 
-        headBobHeight = (math.sqrt(math.sqrt(max(abs(math.sin(self.internalAnimTimer / 30))- 0.25,0.25))) * 5) - 24
+        headBobHeight = (math.sqrt(math.sqrt(max(abs(math.sin(self.internalAnimTimer / 30))- 0.25,0.25))) * 10) - 24
         
         self.displaySprite.fill(pygame.color.Color(0,0,0,0))
 

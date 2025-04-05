@@ -9,6 +9,7 @@ import assets
 import GameLib
 import Guns
 import ToasterPet
+import SmolKitty
 
 pygame.init()
 
@@ -102,7 +103,7 @@ class player:
         
 
         self.currentGun = Guns.AK_47.AK_47.AK_47(self.sprite,self,self.halfSpriteSize)
-        self.currentPet = ToasterPet.ToasterPet(self.renderedLayer,self,self.worldPosition)
+        self.currentPet = SmolKitty.SmolKittyPet(self.renderedLayer,self,self.worldPosition)
 
 
         self.stats = {

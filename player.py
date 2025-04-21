@@ -61,7 +61,7 @@ class player:
 
     def __init__(self, renderedLayer = pygame.surface.Surface):
 
-        self.currentCharacter = 'AriCreature'
+        self.currentCharacter = 'Ari'
 
         self.hasCape = True
         self.currentFoot = 'Right'

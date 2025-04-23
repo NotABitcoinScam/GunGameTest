@@ -61,7 +61,7 @@ class player:
 
     def __init__(self, renderedLayer = pygame.surface.Surface):
 
-        self.currentCharacter = 'Ari'
+        self.currentCharacter = 'RazorBlade'
 
         self.hasCape = True
         self.currentFoot = 'Right'
@@ -77,6 +77,7 @@ class player:
         self.moveVector = pygame.Vector2(0,0)
         self.renderedLayer = renderedLayer
         self.headSheet = pygame.image.load("Assets/Characters/" + self.currentCharacter + "/Head-Sheet.png").convert_alpha()
+        self.headSheet = GameLib.replaceColor(self.headSheet,pygame.color.Color(0,0,0),pygame.color.Color(1,1,1))
         self.slicedHeadSheet = GameLib.stripFromSheet(self.headSheet,[0,0],[16,16],1,4)
         self.headSprites = {
             "Up" : GameLib.scaleSurfaceBy(self.slicedHeadSheet[1],5),
@@ -88,6 +89,7 @@ class player:
 
 
         self.bodySheet = pygame.image.load("Assets/Characters/" + self.currentCharacter + "/Body-Sheet.png").convert_alpha()
+        self.bodySheet = GameLib.replaceColor(self.bodySheet,pygame.color.Color(0,0,0),pygame.color.Color(1,1,1))
         self.slicedBodySheet = GameLib.stripFromSheet(self.bodySheet,[0,0],[16,16],1,4)
         self.bodySprites = {
             "Up" : GameLib.scaleSurfaceBy(self.slicedBodySheet[1],5),
@@ -101,6 +103,7 @@ class player:
         self.sprite = pygame.surface.Surface((self.halfSpriteSize.x*2,self.halfSpriteSize.y*2)).convert_alpha()
         
         self.limbSprite = pygame.image.load("Assets/Characters/" + self.currentCharacter + "/Limb.png").convert_alpha()
+        self.limbSprite = GameLib.replaceColor(self.limbSprite,pygame.color.Color(0,0,0),pygame.color.Color(1,1,1))
         self.limbSprite = GameLib.scaleSurfaceBy(self.limbSprite,5)
         self.leftFoot = limb(self,self.sprite,self.limbSprite,pygame.Vector2(-10,self.bodyHeadSeperation * self.footMult) + self.halfSpriteSize)
         self.rightFoot = limb(self,self.sprite,self.limbSprite,pygame.Vector2(10,self.bodyHeadSeperation * self.footMult) + self.halfSpriteSize)
@@ -116,6 +119,7 @@ class player:
 
         if self.hasCape:
             self.frontCape = FunZone.Cloth.cloth.ImageClothObj(pygame.image.load("Assets/Characters/" + self.currentCharacter + "/Cape.png").convert_alpha(), 5)
+            
 
     
     def onPygameEventCall(self, event):
@@ -191,9 +195,15 @@ class player:
         
         self.sprite.fill(pygame.color.Color(0,0,0,0))
 
-        if -3*math.pi/4 < angle < -math.pi/4:
-            pass
+
+        rendernow = True
+        if not -3*math.pi/4 < angle < -math.pi/4:
             #self.currentGun.render_(camPos)
+            self.frontCape.render_texture(self.sprite,pygame.color.Color(0,0,0),[0,0])
+            rendernow = False
+
+
+        
 
         self.leftFoot.render_(pygame.Vector2(-10,self.bodyHeadSeperation * self.footMult) + self.halfSpriteSize + self.moveVector * self.stepDistanceMult)
         self.rightFoot.render_(pygame.Vector2(10,self.bodyHeadSeperation * self.footMult) + self.halfSpriteSize + self.moveVector * self.stepDistanceMult)
@@ -203,22 +213,12 @@ class player:
 
         rotateAdjustedHeadSprite = GameLib.rotateAtCenter(self.currentHeadSprite,self.headSpriteAngle)
         self.sprite.blit(rotateAdjustedHeadSprite[0],self.halfSpriteSize - rotateAdjustedHeadSprite[1] + pygame.Vector2(self.moveVector.x,headBobHeight) + pygame.Vector2(0,-self.bodyHeadSeperation/2))
-    
-        if not -3*math.pi/4 < angle < -math.pi/4:
-            #self.currentGun.render_(camPos)
-            self.frontCape.render_texture(self.renderedLayer,pygame.color.Color(0,0,0),[0,0])
-        else:
-            pass
-            #self.frontCape.render_polygon(self.renderedLayer,pygame.color.Color(0,0,0))
-
-        
-        
-        #pygame.Vector2(-10,self.bodyHeadSeperation * self.footMult) + self.halfSpriteSize + self.moveVector * self.stepDistanceMult
         
         if self.currentPet.position.y <= (self.worldPosition.y + (self.bodyHeadSeperation)):
             self.currentPet.render(camPos)
 
-        GameLib.drawLabelBox(self.sprite,pygame.color.Color(0,255,0),'Player',20)
+        if rendernow:
+            self.frontCape.render_texture(self.sprite,pygame.color.Color(0,0,0),[0,0])
 
         self.renderedLayer.blit(self.sprite, (self.worldPosition - camPos) - GameLib.getCenterOffset(self.sprite))
 
@@ -227,9 +227,9 @@ class player:
         if self.currentPet.position.y > (self.worldPosition.y + (self.bodyHeadSeperation)):
             self.currentPet.render(camPos)
 
-        self.frontCape.move_grounded([self.worldPosition.x - camPos.x - self.currentBodySprite.get_width()/4 + 2, self.worldPosition.y - camPos.y + 10])
-        if -3*math.pi/4 < angle < -math.pi/4:
-            self.frontCape.render_texture(self.renderedLayer,pygame.color.Color(0,0,0),[0,0])
+        self.frontCape.move_grounded([110.5,138])
+        #self.frontCape.move_grounded([self.worldPosition.x - camPos.x - self.currentBodySprite.get_width()/4 + 2, self.worldPosition.y - camPos.y + 10])
+        
 
     def update(self):
         

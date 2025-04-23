@@ -222,4 +222,4 @@ class WalkingTurret():
 
         #GameLib.drawLabelBox(self.displaySprite,pygame.color.Color(0,255,0),'Walking_Turret',32)
 
-        self.renderSurface.blit(self.displaySprite, (self.position - campos) - GameLib.getCenterOffset(self.displaySprite))
+        self.renderSurface.blit(GameLib.createOutline(self.displaySprite,5,pygame.color.Color(0,0,0)), (self.position - campos) - GameLib.getCenterOffset(self.displaySprite))

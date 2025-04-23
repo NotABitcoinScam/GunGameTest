@@ -55,10 +55,15 @@ MAIN_CAMERA = GameLib.Camera()
 Player = player.player(MainSurf)
 Player.worldPosition = pygame.Vector2(500,500)
 
+
+
 RENDERABLE_OBJECTS.append(Player)
 ENEMIES = []
 RENDERABLE_OBJECTS.append(WalkingTurret.WalkingTurret(MainSurf,Player,pygame.Vector2(500,500)))
-
+PIXELRES = 60
+TIMER = 0
+PIXELRESTIMER = True
+TILEMAPMANAGEROBJECT = GameLib.tilemapManager()
 # DEBUG CRAP
 
 
@@ -74,29 +79,38 @@ testgunwithoutline = GameLib.createOutline(testgunasset,PIXEL_SIZE,pygame.color.
 # DEFINE FUNCTIONS
 
 def update_(): 
+    global PIXELRES
+    global TIMER
+    global PIXELRESTIMER
+    TIMER += 1
     for object in RENDERABLE_OBJECTS:
         object.update()
+
+    if TIMER % 1 == 0 and PIXELRESTIMER == True:
+        PIXELRES = max(PIXELRES - 1, 5)
+        if PIXELRES <= 5:
+            PIXELRESTIMER = False
         
 
 def render_():
     global MainSurf
+    global PIXELRES
 
     drawGizmos()
-
-
     # CAMERA SMOOTH =D
     smoothing = 20
     difference = (Player.worldPosition - MAIN_CAMERA.position)/smoothing
     MAIN_CAMERA.position += pygame.Vector2(difference)
 
 
-    
-
     window.fill(BG_COLOR)
     pygame.display.set_caption(WINDOW_CAPTION)
     '''for key in RENDER_LAYERS.keys():
         window.blit(RENDER_LAYERS[key],pygame.Vector2(0,0))'''
     MAIN_CAMERA.update()
+
+    TILEMAPMANAGEROBJECT.renderTilemap(MAIN_CAMERA,MainSurf)
+
     for object in RENDERABLE_OBJECTS:
         object.render_(MAIN_CAMERA.position - SCREEN_SIZE/2)
 
@@ -104,7 +118,8 @@ def render_():
     tempsurf = GameLib.scaleSurfaceBy(MainSurf,1/PIXEL_SIZE)
     MainSurf = GameLib.scaleSurfaceBy(tempsurf,PIXEL_SIZE)'''
     
-    window.blit(MainSurf,pygame.Vector2(0,0))
+    #window.blit(MainSurf,pygame.Vector2(0,0))
+    window.blit(GameLib.alignPixelsToGrid(MainSurf, PIXELRES),pygame.Vector2(0,0))
 
 def drawGizmos():
 
@@ -125,6 +140,14 @@ render_()
 
 clock = pygame.time.Clock()
 
+
+
+
+
+
+
+
+
 while running:
     # PER FRAME EVENTS
 
@@ -138,6 +161,15 @@ while running:
             running = False
             sys.exit()
             break
+
+        if event.type == pygame.MOUSEWHEEL and not PIXELRESTIMER:
+            if event.y > 0:
+                PIXELRES = min(PIXELRES + event.y, 100)
+            elif event.y < 0:
+                PIXELRES = max(PIXELRES + event.y, 1)
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_q:
+                pixelres = 5
 
     WINDOW_CAPTION = 'Window - FPS: ' + str(round(clock.get_fps(),2))
             
